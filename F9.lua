@@ -12,11 +12,10 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local espEnabled = false
 local espColor = Color3.fromRGB(255, 55, 55)
 local aimEnabled = false
-local aimFov = 130
-local aimSharpness = 0.2
-local showFovCircle = true
+local aimFov = 120
+local aimSharpness = 0.25
 
--- Таблица для хранения объектов подсветки
+-- Хранилище объектов подсветки
 local espHighlights = {}
 
 -- ----------------------------------------------------
@@ -26,9 +25,10 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "CustomGameToolsGui"
 screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.DisplayOrder = 10 -- Поверх стандартных интерфейсов
 screenGui.Parent = PlayerGui
 
--- Круг FOV для аима
+-- Круг зоны видимости (FOV) для аима
 local fovFrame = Instance.new("Frame")
 fovFrame.Name = "FovCircle"
 fovFrame.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -48,17 +48,18 @@ fovStroke.Thickness = 1.5
 fovStroke.Transparency = 0.4
 fovStroke.Parent = fovFrame
 
--- Плавающая круглая кнопка открытия меню
+-- Плавающий круг (кнопка перетаскивания и открытия)
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Name = "MenuToggleCircle"
-toggleBtn.Size = UDim2.new(0, 52, 0, 52)
-toggleBtn.Position = UDim2.new(0, 24, 0.5, -26)
+toggleBtn.Size = UDim2.new(0, 56, 0, 56)
+toggleBtn.Position = UDim2.new(0, 30, 0.45, 0)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
 toggleBtn.Text = "⚙"
 toggleBtn.TextColor3 = Color3.fromRGB(240, 240, 240)
-toggleBtn.TextSize = 22
+toggleBtn.TextSize = 24
 toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.AutoButtonColor = false
+toggleBtn.Active = true
 toggleBtn.Parent = screenGui
 
 local toggleCorner = Instance.new("UICorner")
@@ -66,8 +67,8 @@ toggleCorner.CornerRadius = UDim.new(1, 0)
 toggleCorner.Parent = toggleBtn
 
 local toggleStroke = Instance.new("UIStroke")
-toggleStroke.Color = Color3.fromRGB(50, 50, 60)
-toggleStroke.Thickness = 1.5
+toggleStroke.Color = Color3.fromRGB(55, 55, 65)
+toggleStroke.Thickness = 2
 toggleStroke.Parent = toggleBtn
 
 -- Главное меню
@@ -79,6 +80,7 @@ mainFrame.Size = UDim2.new(0, 0, 0, 0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
 mainFrame.ClipsDescendants = true
 mainFrame.Visible = false
+mainFrame.Active = true
 mainFrame.Parent = screenGui
 
 local mainCorner = Instance.new("UICorner")
@@ -95,9 +97,9 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, -30, 0, 45)
 titleLabel.Position = UDim2.new(0, 15, 0, 5)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "НАСТРОЙКИ ИГРОКА"
+titleLabel.Text = "МЕНЮ НАСТРОЕК"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-titleLabel.TextSize = 15
+titleLabel.TextSize = 14
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = mainFrame
@@ -109,12 +111,12 @@ contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 contentLayout.Parent = mainFrame
 
 local headerSpacer = Instance.new("Frame")
-headerSpacer.Size = UDim2.new(1, 0, 0, 40)
+headerSpacer.Size = UDim2.new(1, 0, 0, 38)
 headerSpacer.BackgroundTransparency = 1
 headerSpacer.LayoutOrder = 0
 headerSpacer.Parent = mainFrame
 
--- Вспомогательная функция для создания карточек функций
+-- Функция создания карточек
 local function createFeatureCard(name, layoutOrder)
     local card = Instance.new("Frame")
     card.Name = name .. "Card"
@@ -122,6 +124,7 @@ local function createFeatureCard(name, layoutOrder)
     card.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
     card.ClipsDescendants = true
     card.LayoutOrder = layoutOrder
+    card.Active = true
     card.Parent = mainFrame
 
     local cardCorner = Instance.new("UICorner")
@@ -145,25 +148,27 @@ local function createFeatureCard(name, layoutOrder)
     title.Text = name
     title.TextColor3 = Color3.fromRGB(230, 230, 230)
     title.Font = Enum.Font.GothamMedium
-    title.TextSize = 14
+    title.TextSize = 13
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = topRow
 
     local arrowBtn = Instance.new("TextButton")
-    arrowBtn.Size = UDim2.new(0, 32, 0, 32)
-    arrowBtn.Position = UDim2.new(1, -85, 0.5, -16)
+    arrowBtn.Size = UDim2.new(0, 36, 0, 36)
+    arrowBtn.Position = UDim2.new(1, -95, 0.5, -18)
     arrowBtn.BackgroundTransparency = 1
     arrowBtn.Text = "▶"
-    arrowBtn.TextColor3 = Color3.fromRGB(160, 160, 180)
+    arrowBtn.TextColor3 = Color3.fromRGB(170, 170, 190)
     arrowBtn.Font = Enum.Font.GothamBold
-    arrowBtn.TextSize = 12
+    arrowBtn.TextSize = 13
+    arrowBtn.Active = true
     arrowBtn.Parent = topRow
 
     local switchBtn = Instance.new("TextButton")
-    switchBtn.Size = UDim2.new(0, 44, 0, 24)
-    switchBtn.Position = UDim2.new(1, -52, 0.5, -12)
+    switchBtn.Size = UDim2.new(0, 46, 0, 26)
+    switchBtn.Position = UDim2.new(1, -54, 0.5, -13)
     switchBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
     switchBtn.Text = ""
+    switchBtn.Active = true
     switchBtn.Parent = topRow
 
     local switchCorner = Instance.new("UICorner")
@@ -171,8 +176,8 @@ local function createFeatureCard(name, layoutOrder)
     switchCorner.Parent = switchBtn
 
     local switchKnob = Instance.new("Frame")
-    switchKnob.Size = UDim2.new(0, 18, 0, 18)
-    switchKnob.Position = UDim2.new(0, 3, 0.5, -9)
+    switchKnob.Size = UDim2.new(0, 20, 0, 20)
+    switchKnob.Position = UDim2.new(0, 3, 0.5, -10)
     switchKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     switchKnob.Parent = switchBtn
 
@@ -193,36 +198,37 @@ local espCard, espSwitch, espKnob, espArrow, espSub = createFeatureCard("ESP (П
 local aimCard, aimSwitch, aimKnob, aimArrow, aimSub = createFeatureCard("Aim (Наведение)", 2)
 
 -- ----------------------------------------------------
--- НАСТРОЙКИ ПОДМЕНЮ ESP
+-- ПАЛИТРА ДЛЯ ESP
 -- ----------------------------------------------------
 local espColors = {
-    {Color3.fromRGB(255, 60, 60), "Красный"},
-    {Color3.fromRGB(60, 255, 120), "Зеленый"},
-    {Color3.fromRGB(60, 170, 255), "Синий"},
-    {Color3.fromRGB(255, 220, 60), "Желтый"},
-    {Color3.fromRGB(200, 80, 255), "Фиолетовый"}
+    Color3.fromRGB(255, 60, 60),
+    Color3.fromRGB(60, 255, 120),
+    Color3.fromRGB(60, 170, 255),
+    Color3.fromRGB(255, 220, 60),
+    Color3.fromRGB(200, 80, 255)
 }
 
 local colorList = Instance.new("UIListLayout")
 colorList.FillDirection = Enum.FillDirection.Horizontal
 colorList.HorizontalAlignment = Enum.HorizontalAlignment.Center
 colorList.VerticalAlignment = Enum.VerticalAlignment.Center
-colorList.Padding = UDim.new(0, 8)
+colorList.Padding = UDim.new(0, 10)
 colorList.Parent = espSub
 
-for _, item in ipairs(espColors) do
+for _, col in ipairs(espColors) do
     local cBtn = Instance.new("TextButton")
-    cBtn.Size = UDim2.new(0, 26, 0, 26)
-    cBtn.BackgroundColor3 = item[1]
+    cBtn.Size = UDim2.new(0, 28, 0, 28)
+    cBtn.BackgroundColor3 = col
     cBtn.Text = ""
+    cBtn.Active = true
     cBtn.Parent = espSub
 
     local cCorner = Instance.new("UICorner")
     cCorner.CornerRadius = UDim.new(1, 0)
     cCorner.Parent = cBtn
 
-    cBtn.MouseButton1Click:Connect(function()
-        espColor = item[1]
+    cBtn.Activated:Connect(function()
+        espColor = col
         for _, hl in pairs(espHighlights) do
             if hl and hl.Parent then
                 hl.FillColor = espColor
@@ -232,7 +238,7 @@ for _, item in ipairs(espColors) do
 end
 
 -- ----------------------------------------------------
--- НАСТРОЙКИ ПОДМЕНЮ AIM
+-- КНОПКИ НАСТРОЙКИ AIM
 -- ----------------------------------------------------
 local aimLayout = Instance.new("UIListLayout")
 aimLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -242,19 +248,20 @@ aimLayout.Parent = aimSub
 
 local function createOptionBtn(text, parent, callback)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 85, 0, 28)
+    btn.Size = UDim2.new(0, 85, 0, 30)
     btn.BackgroundColor3 = Color3.fromRGB(34, 34, 42)
     btn.Text = text
-    btn.TextColor3 = Color3.fromRGB(200, 200, 220)
-    btn.Font = Enum.Font.Gotham
+    btn.TextColor3 = Color3.fromRGB(210, 210, 230)
+    btn.Font = Enum.Font.GothamMedium
     btn.TextSize = 11
+    btn.Active = true
     btn.Parent = parent
 
     local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, 6)
     btnCorner.Parent = btn
 
-    btn.MouseButton1Click:Connect(callback)
+    btn.Activated:Connect(callback)
     return btn
 end
 
@@ -273,23 +280,23 @@ createOptionBtn("Резкость", aimSub, function()
 end)
 
 -- ----------------------------------------------------
--- АНИМАЦИИ И ПЕРЕКЛЮЧЕНИЕ ЭЛЕМЕНТОВ
+-- ОТКРЫТИЕ МЕНЮ И ПЕРЕТАСКИВАНИЕ КНОПКИ (TOUCH & DRAG)
 -- ----------------------------------------------------
 local isMenuOpen = false
-local menuTargetSize = UDim2.new(0, 310, 0, 230)
+local menuTargetSize = UDim2.new(0, 300, 0, 220)
 
 local function toggleMenu()
     isMenuOpen = not isMenuOpen
     if isMenuOpen then
         mainFrame.Visible = true
-        TweenService:Create(mainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
             Size = menuTargetSize
         }):Play()
-        TweenService:Create(toggleBtn, TweenInfo.new(0.25), {
-            BackgroundColor3 = Color3.fromRGB(50, 110, 240)
+        TweenService:Create(toggleBtn, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(50, 115, 245)
         }):Play()
     else
-        local closeTween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        local closeTween = TweenService:Create(mainFrame, TweenInfo.new(0.22, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
             Size = UDim2.new(0, 0, 0, 0)
         })
         closeTween:Play()
@@ -298,20 +305,65 @@ local function toggleMenu()
                 mainFrame.Visible = false
             end
         end)
-        TweenService:Create(toggleBtn, TweenInfo.new(0.25), {
+        TweenService:Create(toggleBtn, TweenInfo.new(0.2), {
             BackgroundColor3 = Color3.fromRGB(20, 20, 24)
         }):Play()
     end
 end
 
-toggleBtn.MouseButton1Click:Connect(toggleMenu)
+-- Логика перетаскивания (работает на касаниях и на мышке)
+local isDragging = false
+local dragStartPos = nil
+local frameStartPos = nil
+local movedFar = false
 
+toggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = true
+        movedFar = false
+        dragStartPos = input.Position
+        frameStartPos = toggleBtn.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                isDragging = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if isDragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+        local delta = input.Position - dragStartPos
+        if delta.Magnitude > 8 then
+            movedFar = true
+        end
+        toggleBtn.Position = UDim2.new(
+            frameStartPos.X.Scale,
+            frameStartPos.X.Offset + delta.X,
+            frameStartPos.Y.Scale,
+            frameStartPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+toggleBtn.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        -- Если палец почти не двигался, считаем это нажатием, а не перетаскиванием
+        if not movedFar then
+            toggleMenu()
+        end
+        isDragging = false
+    end
+end)
+
+-- Переключатели (Свитчи)
 local function setupToggle(switchBtn, switchKnob, getState, setState, onToggle)
-    switchBtn.MouseButton1Click:Connect(function()
+    switchBtn.Activated:Connect(function()
         local newState = not getState()
         setState(newState)
 
-        local targetPos = newState and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9)
+        local targetPos = newState and UDim2.new(1, -23, 0.5, -10) or UDim2.new(0, 3, 0.5, -10)
         local targetColor = newState and Color3.fromRGB(50, 140, 255) or Color3.fromRGB(45, 45, 52)
 
         TweenService:Create(switchKnob, TweenInfo.new(0.2), {Position = targetPos}):Play()
@@ -330,18 +382,19 @@ setupToggle(espSwitch, espKnob, function() return espEnabled end, function(v) es
 end)
 
 setupToggle(aimSwitch, aimKnob, function() return aimEnabled end, function(v) aimEnabled = v end, function(enabled)
-    fovFrame.Visible = enabled and showFovCircle
+    fovFrame.Visible = enabled
 end)
 
+-- Раскрывающийся список параметров
 local function setupAccordion(card, arrowBtn, expandedHeight)
     local isOpen = false
-    arrowBtn.MouseButton1Click:Connect(function()
+    arrowBtn.Activated:Connect(function()
         isOpen = not isOpen
         local targetHeight = isOpen and expandedHeight or 48
         local targetRot = isOpen and 90 or 0
 
-        TweenService:Create(card, TweenInfo.new(0.25, Enum.EasingStyle.Quad), {Size = UDim2.new(0.92, 0, 0, targetHeight)}):Play()
-        TweenService:Create(arrowBtn, TweenInfo.new(0.25), {Rotation = targetRot}):Play()
+        TweenService:Create(card, TweenInfo.new(0.22, Enum.EasingStyle.Quad), {Size = UDim2.new(0.92, 0, 0, targetHeight)}):Play()
+        TweenService:Create(arrowBtn, TweenInfo.new(0.22), {Rotation = targetRot}):Play()
     end)
 end
 
@@ -349,7 +402,7 @@ setupAccordion(espCard, espArrow, 115)
 setupAccordion(aimCard, aimArrow, 115)
 
 -- ----------------------------------------------------
--- ЛОГИКА ESP (HIGHLIGHT)
+-- СИСТЕМА ESP
 -- ----------------------------------------------------
 local function applyESP(player)
     if player == LocalPlayer then return end
@@ -382,7 +435,7 @@ Players.PlayerRemoving:Connect(function(p)
 end)
 
 -- ----------------------------------------------------
--- ЛОГИКА AIM И ПРОВЕРКА ПРЕПЯТСТВИЙ (RAYCAST)
+-- СИСТЕМА AIM С ПРОВЕРКОЙ ПРЕПЯТСТВИЙ
 -- ----------------------------------------------------
 local rayParams = RaycastParams.new()
 rayParams.FilterType = RaycastParamsFilterType.Exclude
